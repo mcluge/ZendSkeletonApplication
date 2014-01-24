@@ -1,9 +1,19 @@
 <?php
+
+$env = getenv('APP_ENV')?: 'production';
+
+// Use the $env value to determine which modules to load
+$modules = array(
+        'Application',
+);
+if ($env == 'development') {
+    $modules[] = 'ZendDeveloperTools';
+}
+
+
 return array(
     // This should be an array of module namespaces used in the application.
-    'modules' => array(
-        'Application',
-    ),
+    'modules' => $modules,
 
     // These are various options for the listeners attached to the ModuleManager
     'module_listener_options' => array(
@@ -12,7 +22,8 @@ return array(
         // namespace, the value of that key the specific path to that module's
         // Module class.
         'module_paths' => array(
-            './module',
+            './module.api',
+            './module.shared',
             './vendor',
         ),
 
@@ -20,7 +31,7 @@ return array(
         // modules are loaded. These effectively override configuration
         // provided by modules themselves. Paths may use GLOB_BRACE notation.
         'config_glob_paths' => array(
-            'config/autoload/{,*.}{global,local}.php',
+            sprintf('config/autoload/{,*.}{global,%s,local}.php', $env)
         ),
 
         // Whether or not to enable a configuration cache.
